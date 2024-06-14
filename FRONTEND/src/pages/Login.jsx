@@ -17,7 +17,7 @@ function Login() {
     try {
       const response = await axios.post('http://localhost:5000/login', formData);
       localStorage.setItem('token', response.data.token);
-      navigate('/display-employee');
+      navigate('/DisplayEmployee');
     } catch (error) {
       setError('Invalid email or password');
     }
