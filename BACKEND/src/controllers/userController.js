@@ -1,66 +1,106 @@
-import pool from '../server.js';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import sql from 'mssql';
+import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
+import { PrismaClient } from "@prisma/client";
 
-export const createUser = ()=>{
-   return async (req, res) => {
-        const { email, password } = req.body;
-    
-        try {
-          const conn = await pool.getConnection();
-          const hashedPassword = await bcrypt.hash(password, 10);
-          const query = 'INSERT INTO users (email, password) VALUES (?, ?)';
-          await conn.query(query, [email, hashedPassword]);
-          conn.release();
-          res.status(201).send({ message: 'User registered successfully!' });
-        } catch (error) {
-          console.error('Error registering user:', error);
-          res.status(500).send({ message: 'Failed to register user' });
-        }
-      }
-}
-const SECRET_KEY = process.env.JWT_SECRET || 'e135e0505829e5e204c0f35f55744895ba9fd978ccc73f72566da592570b1415';
+const prisma = new PrismaClient();
+export async function createUserHandler(req, res) {
+  try {
+    const { email, password, confirmPassword } = req.body;
 
-export  const authenticateUser = () => {
-return async (req, res) => {
-const { email, password } = req.body;
+    const existingUser = await prisma.user.findUnique({
+      where: {
+        email,
+      },
+    });
+    if (password !== confirmPassword)
+      return res.status(400).send("Password don't match confirm password");
+    if (existingUser) {
+      return res.status(409).send("User already exists");
+    }
+    // Generate salt
+    const salt = await bcrypt.genSalt(10);
 
-try {
-  
-  const conn = await pool.getConnection();
-  
-  const query = 'SELECT * FROM users WHERE email = ?';
-  const result = await conn.query(query, [email]);
-  conn.release();
-  
+    // Hash the password with the generated salt
+    const hashedPassword = await bcrypt.hash(password, salt);
 
-  if (!result || result.length === 0) {
-    console.warn('No user found with email:', email);
-    return res.status(400).send({ message: 'Invalid email or password' });
+    const data = {
+      email,
+      password: hashedPassword,
+    };
+    const user = await prisma.user.create({ data: data });
+    console.log(user, "the user");
+    delete user.password;
+    return res.status(201).send(user);
+  } catch (e) {
+    console.error(e);
+    return res.status(409).send(e.message);
   }
-
-  const user = result[0];
-  const isMatch = await bcrypt.compare(password, user.password);
- 
-  if (!isMatch) {
-    console.warn('Password does not match for user:', email);
-    return res.status(400).send({ message: 'Invalid email or password' });
-  }
-
-  const token = jwt.sign({ id: user.id, email: user.email }, SECRET_KEY, { expiresIn: '1h' });
-  res.status(200).send({ token });
-} catch (error) {
-  console.error('Error logging in user:', error);
-  console.log(error);
-  res.status(500).send({ message: 'Failed to login user' });
 }
+export async function getUserDetails(req, res) {
+  try {
+    const user = req.user;
+    if (user) return res.status(200).send(user);
+    return res.status(404).send("User not found");
+  } catch (e) {
+    console.error(e);
+    return res.status(409).send(e.message);
+  }
+}
+export async function verifyUser(req, res) {
+  try {
+    const { email } = req.body;
+    const existingUser = await prisma.user.findUnique({
+      where: {
+        email,
+      },
+    });
+    if (!existingUser) {
+      return res.status(409).send("That account don't exist");
+    }
+    const updatedUser = await prisma.user.update({
+      where: {
+        email,
+      },
+      data: {
+        ...existingUser,
+        verified: true,
+      },
+    });
+    if (updatedUser) return res.status(201).send("User verified succesfully");
+  } catch (e) {
+    console.error(e);
+    return res.status(409).send(e.message);
+  }
+}
+
+// Login user and generate JWT token
+export const loginUser = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Check if the user exists
+    const user = await prisma.user.findUnique({
+      where: {
+        email,
+      },
+    });
+    if (!user) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
+
+    // Compare passwords
+    const passwordMatch = await bcrypt.compare(password, user.password);
+    if (!passwordMatch) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
+
+    // Generate JWT token
+    const token = jwt.sign({userId : user.id},process.env.JWT_SECRET);
+    res.json({ message: "Login successful", token });
+  } catch (error) {
+    console.error("Error logging in user:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 };
-};
 
-
-
-
-
-
-
+// Other controller methods...
