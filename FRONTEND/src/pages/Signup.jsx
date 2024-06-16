@@ -27,9 +27,10 @@ function Signup() {
     }
 
     try {
-      await axios.post('http://localhost:5000/signup', {
-        email: formData.email,
-        password: formData.password
+      await axios.post('http://localhost:5000/api/v1/users/register', {
+        "email": formData.email,
+        "password": formData.password,
+        "confirmPassword":formData.confirmPassword
       });
       alert('User registered successfully');
     } catch (error) {
@@ -40,8 +41,8 @@ function Signup() {
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-white">
-      <div className="flex w-full max-w-4xl mx-auto shadow-lg rounded-lg overflow-hidden">
-        <div className="w-1/2 p-8">
+      <div className="flex w-2/4  mx-auto shadow-lg rounded-lg overflow-hidden justify-center">
+        <div className="w-3/4 p-8">
           <h2 className="text-3xl font-semibold mb-6">Signup</h2>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
@@ -82,22 +83,23 @@ function Signup() {
             </div>
             {passwordError && <p className="text-red-500 text-sm">{passwordError}</p>}
             <div>
-              <button type="submit" className="w-full px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">Sign Up</button>
+              <button type="submit" className="w-full px-4 py-2 bg-[#078ECE] text-white rounded-md ">Sign Up</button>
             </div>
           </form>
           <p className="mt-4 text-sm">
             Already a user? <Link to="/login" className="text-indigo-600">Login</Link>
           </p>
         </div>
-        <div className="w-1/2 flex items-center justify-center bg-gradient-to-br from-blue-500 to-blue-800 text-white p-8">
+        {/* <div className="w-1/2 flex items-center justify-center bg-gradient-to-br bg-[#054D6F] text-white p-8">
           <div className="text-center">
             <p className="text-2xl italic">"Rwanda TVET Board"</p>
             <p className="mt-4">- Ease of work</p>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );
 }
 
 export default Signup;
+// hover:bg-indigo-700
