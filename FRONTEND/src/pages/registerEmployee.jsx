@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from '../services/axios.config';
 
 
-function RegisterEmployee() {
+function RegisterEmployee({onClose}) {
   const [formData, setFormData] = useState({
     id: "",
     firstName: "",
@@ -50,8 +50,9 @@ function RegisterEmployee() {
   };
 
   return (
-    <div className="min-h-screen flex justify-center items-center ">
-      <div className=" w-5/5 mx-auto shadow-2xl rounded-lg overflow-hidden flex justify-center">
+    <div className="min-h-screen fixed top-0 left-0 bottom-0 right-0 z-10 inset-0 bg-black bg-opacity-50 flex justify-center items-center ">
+      
+      <div className=" w-5/5 z-20 mx-auto shadow-2xl rounded-lg overflow-hidden flex justify-center">
         <div className=" grid-cols-1 md:grid-cols-2 flex justify-center">
           <div className="p-6 bg-white">
             <h1 className="text-l font-semibold mb-4">Register Employees</h1>

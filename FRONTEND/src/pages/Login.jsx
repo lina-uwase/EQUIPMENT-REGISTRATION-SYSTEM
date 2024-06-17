@@ -10,6 +10,7 @@ function Login() {
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -20,10 +21,11 @@ function Login() {
       setError('Invalid email or password');
     }
   };
+
   return (
-    <div className="flex justify-center items-center min-h-screen bg-white">
-      <div className="flex w-2/4  shadow-lg rounded-lg overflow-hidden justify-center">
-        <div className="w-3/4 p-8 flex flex-col justify-center">
+    <div className="flex justify-center  items-center min-h-screen bg-white">
+      <div className="flex shadow-2xl rounded-lg overflow-hidden justify-center">
+        <div className="w-[30rem] p-8 flex flex-col justify-center shadow-t-lg">
           <h2 className="text-xl font-semibold mb-6">Login</h2>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
@@ -57,14 +59,15 @@ function Login() {
           </form>
           <p className="mt-4 text-sm">Don't have an account? <Link to="/signup" className="text-indigo-600">Signup</Link> </p>
         </div>
-        {/* <div className="w-1/2 flex items-center justify-center bg-gradient-to-br bg-[#054D6F] text-white p-8">
+        <div className="w-[30rem] flex items-center justify-center bg-gradient-to-br bg-[#054D6F] text-white p-8">
           <div className="text-center">
             <p className="text-2xl italic">"Rwanda TVET Board"</p>
             <p className="mt-4">- Ease of work</p>
           </div>
-        </div> */}
+        </div>
       </div>
     </div>
   );
 }
+
 export default Login;
