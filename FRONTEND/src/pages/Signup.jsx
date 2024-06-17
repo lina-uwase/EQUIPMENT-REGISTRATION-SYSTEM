@@ -41,9 +41,9 @@ function Signup() {
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-white">
-      <div className="flex w-2/4  mx-auto shadow-lg rounded-lg overflow-hidden justify-center">
-        <div className="w-3/4 p-8">
-          <h2 className="text-3xl font-semibold mb-6">Signup</h2>
+      <div className="flex  mx-auto shadow-lg rounded-lg overflow-hidden justify-center">
+        <div className=" w-[30rem] p-8">
+          <h2 className="text-xl font-semibold mb-6">Signup</h2>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email address</label>
@@ -90,12 +90,12 @@ function Signup() {
             Already a user? <Link to="/login" className="text-indigo-600">Login</Link>
           </p>
         </div>
-        {/* <div className="w-1/2 flex items-center justify-center bg-gradient-to-br bg-[#054D6F] text-white p-8">
+        <div className="w-[30rem] flex items-center justify-center bg-gradient-to-br bg-[#054D6F] text-white p-8">
           <div className="text-center">
             <p className="text-2xl italic">"Rwanda TVET Board"</p>
             <p className="mt-4">- Ease of work</p>
           </div>
-        </div> */}
+        </div>
       </div>
     </div>
   );

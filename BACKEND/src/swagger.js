@@ -4,13 +4,14 @@ import path from "path";
 
 const options={
     definition: {
-        openapi:"3.0.0.0",
+        openapi:"3.0.0",
         info:{
-            title:"Employee Management API",
-            description:"Employee management for registration and retrieval",
+            title:"Equipment Distribution SYSTEM API",
+            description:"Equipment management for registration and retrieval",
             version: "1.0.0",
         },
     },
+
 
     //looks for configuration in specified directions
     apis:[("routes/*.routes.js")]

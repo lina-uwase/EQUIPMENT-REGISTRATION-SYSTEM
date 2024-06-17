@@ -7,11 +7,15 @@ import { Link } from "react-router-dom";
 import axios from "../services/axios.config";
 import EditEmployeeModal from "../components/editEmployee";
 import DeleteEmployeeButton from "../components/deleteEmployee";
+import SearchField from "../components/search";
 
 function Dashboard() {
-  const [employees, setEmployees] = useState([]);
+  // const [employees, setEmployees] = useState([]);
   const [editingEmployee, setEditingEmployee] = useState(null);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [data,setData] = useState([])
+  const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     fetchEmployees();
@@ -20,7 +24,7 @@ function Dashboard() {
   const fetchEmployees = async () => {
     try {
       const response = await axios.get("/employees/getAllEmployees");
-      setEmployees(response.data.employeesData);
+      setData(response.data.employeesData);
       console.log(response.data.employeesData);
     } catch (error) {
       console.error("Error fetching employees:", error);
@@ -28,13 +32,9 @@ function Dashboard() {
     }
   };
 
-  useEffect(() => {
-    fetchEmployees();
-  }, []);
-
   const deleteEmployee = (id) => {
-    const updatedEmployees = employees.filter((employee) => employee.id !== id);
-    setEmployees(updatedEmployees);
+    const updatedEmployees = data.filter((employee) => employee.id !== id);
+    setData(updatedEmployees);
     localStorage.setItem("employees", JSON.stringify(updatedEmployees));
   };
 
@@ -43,18 +43,39 @@ function Dashboard() {
   };
 
   const saveEdit = (updatedEmployee) => {
-    const updatedEmployees = employees.map((employee) =>
+    const updatedEmployees = data.map((employee) =>
       employee.id === updatedEmployee.id ? updatedEmployee : employee
     );
-    setEmployees(updatedEmployees);
+    setData(updatedEmployees);
     localStorage.setItem("employees", JSON.stringify(updatedEmployees));
     setEditingEmployee(null);
   };
 
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+  };
+
+  const getPaginatedEmployees = () => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return filteredData.slice(startIndex, startIndex + itemsPerPage);
+  };
+
+  const totalPages = Math.ceil(data.length / itemsPerPage);
+
+  const handleSearch = (e) => {
+    setSearchQuery(e.target.value);
+};
+
+const filteredData = data.filter(employee =>
+    Object.values(employee).some(value =>
+        value.toString().toLowerCase().includes(searchQuery.toLowerCase())
+    )
+);
+
   return (
     <div className="min-h-screen flex flex-col lg:flex-row text-sm">
       <div className="bg-[#054D6F] w-full lg:w-2/12 p-2 flex flex-col lg:block">
-        <div className="text-[#DCDCDC] flex flex-col justify-center  lg:flex-none p-12 gap-1 ">
+        <div className="text-[#DCDCDC] flex flex-col justify-center lg:flex-none p-12 gap-1 ">
           <div className="flex items-center gap-1">
             <MdDashboard className="mt-1" />
             <Link to="/Dashboard">Dashboard</Link>
@@ -68,9 +89,9 @@ function Dashboard() {
             <Link to="/Dashboard">Users</Link>
           </div>
         </div>
-        <div className="flex items-center justify-center gap-2  lg:mt-auto">
+        <div className="flex items-center justify-center gap-2 lg:mt-auto">
           <TbLogout2 className="mt-1 text-[#DCDCDC]" />
-          <Link to="/Dashboard" className=" text-[#DCDCDC]">Logout</Link>
+          <Link to="/Dashboard" className="text-[#DCDCDC]">Logout</Link>
         </div>
       </div>
       <div className="w-full lg:w-10/12 p-2">
@@ -84,13 +105,7 @@ function Dashboard() {
           </div>
         </div>
         <div className="max-w-4xl w-full mx-auto rounded-lg overflow-hidden mb-2 p-2 bg-white">
-          <input
-            type="text"
-            placeholder="Search Employees"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full border-b border-gray-300 p-1 focus:outline-none"
-          />
+        <SearchField searchQuery={searchQuery} handleSearch={handleSearch} />
         </div>
         <div className="max-w-4xl w-full mx-auto rounded-lg overflow-hidden bg-white">
           <table className="min-w-full text-xs">
@@ -108,8 +123,8 @@ function Dashboard() {
                 <th className="px-2 py-1 border-b">Actions</th>
               </tr>
             </thead>
-            <tbody>
-              {employees.map((employee, index) => (
+            <tbody data = {getPaginatedEmployees()}>
+              {getPaginatedEmployees().map((employee, index) => (
                 <tr key={index}>
                   <td className="px-2 py-1 border-b">{employee.id}</td>
                   <td className="px-2 py-1 border-b">{employee.firstName}</td>
@@ -123,7 +138,7 @@ function Dashboard() {
                   <td className="px-2 py-1 border-b">
                     <button
                       onClick={() => startEditing(employee)}
-                      className="px-1 py-1 bg-blue-500 text-white rounded-md"
+                      className="px-1 py-1 bg-[#078ECE] text-white rounded-md"
                     >
                       Edit
                     </button>
@@ -137,6 +152,33 @@ function Dashboard() {
             </tbody>
           </table>
         </div>
+        {totalPages > 1 && (
+          <div className="flex justify-center items-center mt-4">
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="px-2 py-1 bg-gray-300 rounded-md mx-1"
+            >
+              Previous
+            </button>
+            {Array.from({ length: totalPages }, (_, index) => (
+              <button
+                key={index}
+                onClick={() => handlePageChange(index + 1)}
+                className={`px-2 py-1 rounded-md mx-1 ${currentPage === index + 1 ? 'bg-[#078ECE] text-white' : 'bg-gray-300'}`}
+              >
+                {index + 1}
+              </button>
+            ))}
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="px-2 py-1 bg-gray-300 rounded-md mx-1"
+            >
+              Next
+            </button>
+          </div>
+        )}
         {editingEmployee && (
           <EditEmployeeModal
             employee={editingEmployee}

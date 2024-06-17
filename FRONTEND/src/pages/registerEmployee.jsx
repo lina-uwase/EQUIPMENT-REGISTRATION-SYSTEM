@@ -32,7 +32,14 @@ function RegisterEmployee() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('/employees/create', formData);
+      const token = localStorage.getItem("token");
+      console.log(token);
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      const response = await axios.post('/employees/create', formData,config);
       if (response.status === 201) {
         console.log("user created");
       }
@@ -134,7 +141,7 @@ function RegisterEmployee() {
               </div>
               <div>
                 <label
-                  htmlFor="email"
+                  htmlFor="emaill"
                   className="block text-xs font-medium text-gray-700"
                 >
                   Email

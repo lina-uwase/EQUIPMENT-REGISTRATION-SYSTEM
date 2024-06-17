@@ -32,9 +32,12 @@ app.get("/healthcheck", (req, res) => {
 // Define API routes
 app.use("/api/v1/users", UserRouter);
 app.use("/api/v1/employees", EmployeeRouter);
+// app.use("/docs",swaggerDocs);
 
 // Start the server
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
   swaggerDocs(app, port);
 });
+
+

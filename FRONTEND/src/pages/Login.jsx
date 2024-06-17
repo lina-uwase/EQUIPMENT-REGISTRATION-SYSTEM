@@ -15,7 +15,7 @@ function Login() {
     try {
       const response = await axios.post('http://localhost:5000/api/v1/users/login', formData);
       localStorage.setItem('token', response.data.token);
-      navigate('/DisplayEmployee');
+      navigate('/dashboard');
     } catch (error) {
       setError('Invalid email or password');
     }
@@ -24,7 +24,7 @@ function Login() {
     <div className="flex justify-center items-center min-h-screen bg-white">
       <div className="flex w-2/4  shadow-lg rounded-lg overflow-hidden justify-center">
         <div className="w-3/4 p-8 flex flex-col justify-center">
-          <h2 className="text-3xl font-semibold mb-6">Login</h2>
+          <h2 className="text-xl font-semibold mb-6">Login</h2>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email address</label>

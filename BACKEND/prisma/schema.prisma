@@ -21,23 +21,29 @@ model Employee {
   nationalId   String
   telephone    String
   email        String
+  department   String
   position     String
-  departmentId Int?
-  laptopId     Int?
+  laptopManufacturer  String
+  model  String
+  serialNumber String
+  
+ 
 
-  department Department? @relation(fields: [departmentId], references: [id])
-  laptop     Laptop?     @relation(fields: [laptopId], references: [id])
-}
-model Laptop {
-  id                 Int        @id @default(autoincrement())
-  laptopManufacturer String
-  laptopModel        String
-  serialNumber       String
-  employees          Employee[]
-}
+  //laptopId     Int?
 
-model Department {
-  id        Int        @id @default(autoincrement())
-  name      String
-  employees Employee[]
+  //department Department? @relation(fields: [departmentId], references: [id])
+ // laptop     Laptop?     @relation(fields: [laptopId], references: [id])
 }
+//model Laptop {
+ // id                 Int        @id @default(autoincrement())
+  //laptopManufacturer String
+ // laptopModel        String
+ // serialNumber       String
+ // employees          Employee[]
+//}
+
+//model Department {
+ // id        Int        @id @default(autoincrement())
+ // name      String
+ // employees Employee[]
+//}
