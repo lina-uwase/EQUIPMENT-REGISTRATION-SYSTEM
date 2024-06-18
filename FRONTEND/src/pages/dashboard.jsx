@@ -77,7 +77,7 @@ function Dashboard() {
   return (
     <>
     {showAdd && <RegisterEmployee onClose={() => setShowAdd(false)} />}
-      <div className="min-h-screen flex flex-col lg:flex-row">
+      <div className="min-h-screen flex flex-col lg:flex-row text-sm">
         <div className="bg-[#054D6F] w-full lg:w-2/12 p-2 flex flex-col lg:block">
           <div className="text-[#DCDCDC] flex flex-col justify-center lg:flex-none p-12 gap-1 ">
             <div className="flex items-center gap-1">

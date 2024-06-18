@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from '../services/axios.config';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "../services/axios.config";
+import { MdOutlineCancel } from "react-icons/md";
 
 
-function RegisterEmployee({onClose}) {
+function RegisterEmployee({ onClose }) {
   const [formData, setFormData] = useState({
     id: "",
     firstName: "",
@@ -11,11 +12,11 @@ function RegisterEmployee({onClose}) {
     nationalId: "",
     telephone: "",
     email: "",
-    department:"",
+    department: "",
     position: "",
-    laptopManufacturer:"",
-    model:"",
-    serialNumber:""
+    laptopManufacturer: "",
+    model: "",
+    serialNumber: "",
   });
 
   const [formErrors, setFormErrors] = useState({});
@@ -32,30 +33,49 @@ function RegisterEmployee({onClose}) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const token = localStorage.getItem("token");
-      console.log(token);
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      };
-      const response = await axios.post('/employees/create', formData,config);
-      if (response.status === 201) {
-        console.log("user created");
-      }
-      navigate('/dashboard');
+        const token = localStorage.getItem("token");
+        console.log(token);
+        const config = {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        };
+        const response = await axios.post("/employees/create", formData, config);
+        if (response.status === 201) {
+            console.log("user created");
+            // Reset form data to initial values
+            setFormData({
+                id: "",
+                firstName: "",
+                lastName: "",
+                nationalId: "",
+                telephone: "",
+                email: "",
+                department: "",
+                position: "",
+                laptopManufacturer: "",
+                model: "",
+                serialNumber: "",
+            });
+            // Navigate to dashboard after resetting the form
+            navigate("/dashboard");
+        }
     } catch (error) {
-      setError('An error occurred while registering the employee');
+        setError("An error occurred while registering the employee");
     }
-  };
+};
 
   return (
     <div className="min-h-screen fixed top-0 left-0 bottom-0 right-0 z-10 inset-0 bg-black bg-opacity-50 flex justify-center items-center ">
-      
-      <div className=" w-5/5 z-20 mx-auto shadow-2xl rounded-lg overflow-hidden flex justify-center">
+      <div className=" ralative w-5/5 z-20 mx-auto shadow-2xl rounded-lg overflow-hidden flex justify-center">
         <div className=" grid-cols-1 md:grid-cols-2 flex justify-center">
           <div className="p-6 bg-white">
-            <h1 className="text-l font-semibold mb-4">Register Employees</h1>
+            <div className="flex justify-between items-center mb-4">
+              <h1 className="text-l font-semibold">Register Employees</h1>
+              <MdOutlineCancel className=" text-black rounded-full w-8 h-8 flex items-center cursor-pointer justify-center"
+                onClick={onClose} />
+             
+            </div>
             <form
               onSubmit={handleSubmit}
               className="grid grid-cols-2 md:grid-cols-2 gap-3"
@@ -172,7 +192,7 @@ function RegisterEmployee({onClose}) {
                   className="mt-1 block w-full px-2 py-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-xs"
                 />
               </div>
-              
+
               <div>
                 <label
                   htmlFor="position"
@@ -194,7 +214,7 @@ function RegisterEmployee({onClose}) {
                   htmlFor="laptopManufacturer"
                   className="block text-xs font-medium text-gray-700"
                 >
-                 Laptop Manufacturer
+                  Laptop Manufacturer
                 </label>
                 <input
                   type="text"
@@ -238,7 +258,8 @@ function RegisterEmployee({onClose}) {
                 />
               </div>
               <div className="col-span-2">
-                <button onClick={handleSubmit}
+                <button
+                  onClick={handleSubmit}
                   type="submit"
                   className="w-full px-3 py-1 bg-[#078ECE] text-white rounded-md text-sm"
                 >
@@ -252,11 +273,8 @@ function RegisterEmployee({onClose}) {
                   <p key={index}>{error}</p>
                 ))}
               </div>
-
             )}
-            <div className=' text-sm text-red-200'>
-              {error}
-            </div>
+            <div className=" text-sm text-red-200">{error}</div>
           </div>
           {/* <div className="hidden md:flex items-center justify-center bg-gradient-to-br from-blue-500 to-blue-800 text-white p-6">
             <div className="text-center">
